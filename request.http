@@ -12,4 +12,12 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:3333/courses/00b05611-ac6a-42b7-8d26-d1b8e6a19b5c
+GET http://localhost:3333/courses/4b299beb-00a6-4a36-87ad-4e22e62b0fe8
+
+####
+PUT http://localhost:3333/courses/bae1e492-320b-4af4-b15f-db901e6b4e
+Content-Type: application/json
+
+{
+    "title": "Curso de logica de programacao"
+}

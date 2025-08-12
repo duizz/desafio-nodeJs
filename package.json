@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx tsx watch server.ts"
+    "dev": "npx tsx watch --env-file .env server.ts"
   },
   "keywords": [],
   "author": "",

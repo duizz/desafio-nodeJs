@@ -1,5 +1,6 @@
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import crypto from "node:crypto"
+import { title } from "node:process";
 
 const server = fastify({
     logger: {
@@ -57,6 +58,47 @@ server.post("/courses", (request: FastifyRequest, reply: FastifyReply) => {
     courses.push({id: coursesId, title: courseTitle});
 
     return reply.status(201).send(coursesId)
+})
+
+server.put("/courses/:id", (request: FastifyRequest, reply: FastifyReply) => {
+    type Params = {
+        id: string
+    }
+
+    type Body = {
+        title: string
+    }
+    
+    const { id } = request.params as Params;
+    const { title } = request.body as Body;
+    const courseId = courses.find(course => course.id === id)
+
+    if(!courseId){
+        return reply.status(404).send({message: 'Course not found!'})
+    }
+
+    courseId.title = title
+
+    return reply.status(200).send({ courses })
+
+})
+
+server.delete("/courses/:id", (request: FastifyRequest, reply: FastifyReply) => {
+    type Params = {
+        id: string
+    }
+
+    const { id } = request.params as Params;
+    const courseId = courses.findIndex(course => course.id === id)
+    console.log(courseId)
+
+    if(courseId === -1){
+        return reply.status(404).send({message: 'Course not found!'})
+    }
+
+    courses.splice(courseId, 1);
+
+    return reply.status(204)
 })
 
 server.listen({
