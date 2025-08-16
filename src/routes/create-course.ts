@@ -18,7 +18,7 @@ export const createCourseRoute: FastifyPluginAsyncZod = async (server) => {
                 }).describe('Curso criado com sucesso!')
             }
         },
-    } ,async (request, reply) => {
+    }, async (request, reply) => {
     
         const courseTitle = request.body.title
     

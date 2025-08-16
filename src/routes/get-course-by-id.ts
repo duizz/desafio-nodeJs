@@ -8,7 +8,7 @@ export const getCourseByIdRoute: FastifyPluginAsyncZod = async (server) => {
     server.get("/courses/:id",{
         schema: {
             tags: [ 'courses' ],
-            summary: 'Find Course By Identifier',
+            summary: 'Find Course By Id',
             description: 'Essa rota recebe um identificador como parametro e retorna o curso associado',
             params: z.object({
                 id: z.uuid()
@@ -39,4 +39,4 @@ export const getCourseByIdRoute: FastifyPluginAsyncZod = async (server) => {
 
         return reply.status(400).send()
     })
-} 
+}
