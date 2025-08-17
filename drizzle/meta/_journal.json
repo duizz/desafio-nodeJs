@@ -43,6 +43,20 @@
       "when": 1755302667410,
       "tag": "0005_big_turbo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1755452107290,
+      "tag": "0006_unknown_blue_shield",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1755452449043,
+      "tag": "0007_busy_toad",
+      "breakpoints": true
     }
   ]
 }

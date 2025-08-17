@@ -1,4 +1,9 @@
-import { pgTable, uuid, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum } from "drizzle-orm/pg-core";
+
+export const userRole = pgEnum('users_roles', [
+    'student',
+    'manager'
+])
 
 export const courses = pgTable('courses', {
     id: uuid().primaryKey().defaultRandom(),
@@ -9,7 +14,9 @@ export const courses = pgTable('courses', {
 export const users = pgTable('users', {
     id: uuid().primaryKey().defaultRandom(),
     name: text().notNull(),
-    email: text().unique().notNull()
+    email: text().unique().notNull(),
+    password: text().notNull(),
+    role: userRole().notNull().default('student')
 })
 
 export const enrollments = pgTable('enrollments', {

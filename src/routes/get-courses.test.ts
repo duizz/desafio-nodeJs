@@ -8,6 +8,7 @@ import { makeUser } from "../tests/factories/make-user.ts";
 import { db } from "../database/client.ts";
 import { enrollments } from "../database/schema.ts";
 import { eq } from "drizzle-orm";
+import { makeAuthenticatedUser } from "../tests/factories/make-session.ts";
 
 test('get all courses', async () => {
     await server.ready()
@@ -15,11 +16,14 @@ test('get all courses', async () => {
     const titleId = randomUUID()
     const course = await makeCourse(titleId);
 
-    const user = await makeUser()
+    const { user } = await makeUser()
     const enrollmentsId = await makeEnrollments(course.id, user.id)
+
+    const { token } = await makeAuthenticatedUser('manager')
 
     const response = await supertest(server.server)
         .get(`/courses?search=${titleId}&page=1`)
+        .set('Authorization', token)
 
     const enrollmentsCount = await db
         .select()
