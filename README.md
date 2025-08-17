@@ -2,12 +2,12 @@
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![Fastify](https://img.shields.io/badge/Fastify-4.0+-green.svg)](https://fastify.io/)
+[![Fastify](https://img.shields.io/badge/Fastify-5.0+-green.svg)](https://fastify.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://www.postgresql.org/)
-[![Drizzle ORM](https://img.shields.io/badge/Drizzle%20ORM-0.29+-orange.svg)](https://orm.drizzle.team/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle%20ORM-0.44+-orange.svg)](https://orm.drizzle.team/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-Uma API REST moderna e robusta construída com **Fastify**, **TypeScript** e **PostgreSQL** para gerenciamento de cursos, com foco em performance, type-safety e boas práticas de desenvolvimento.
+Uma API REST moderna e robusta construída com **Fastify**, **TypeScript** e **PostgreSQL** para gerenciamento de cursos e usuários, com sistema completo de autenticação, autorização e controle de acesso baseado em roles.
 
 ## Índice
 
@@ -29,14 +29,16 @@ Uma API REST moderna e robusta construída com **Fastify**, **TypeScript** e **P
 
 ## Sobre o Projeto
 
-Esta é uma API REST para gerenciamento de cursos, desenvolvida como projeto de aprendizado para explorar tecnologias modernas de desenvolvimento backend. A aplicação demonstra boas práticas como:
+Esta é uma API REST completa para gerenciamento de cursos e usuários, desenvolvida como projeto de aprendizado para explorar tecnologias modernas de desenvolvimento backend. A aplicação demonstra boas práticas como:
 
 - **Arquitetura limpa** com separação clara de responsabilidades
 - **Type-safety** completo com TypeScript
 - **Validação robusta** de dados com Zod
 - **ORM moderno** com Drizzle para operações de banco
+- **Sistema de autenticação** com JWT e Argon2
+- **Controle de acesso** baseado em roles (student/manager)
 - **Testes automatizados** com Vitest
-- **Documentação automática** com Swagger/OpenAPI
+- **Documentação automática** com Scalar API Reference
 - **Containerização** com Docker para desenvolvimento
 
 ## Fluxo da Aplicação
@@ -47,37 +49,46 @@ graph TD
     B --> C{Validação Zod}
     C -->|Dados Válidos| D[Controller/Route]
     C -->|Dados Inválidos| E[Erro 400 Bad Request]
-    D --> F[Drizzle ORM]
-    F --> G[PostgreSQL Database]
-    G --> H[Resultado]
-    H --> I[Resposta JSON]
-    I --> A
+    D --> F[Verificação JWT]
+    F -->|Token Válido| G[Verificação de Role]
+    F -->|Token Inválido| H[Erro 401 Unauthorized]
+    G -->|Role Permitido| I[Drizzle ORM]
+    G -->|Role Negado| J[Erro 403 Forbidden]
+    I --> K[PostgreSQL Database]
+    K --> L[Resultado]
+    L --> M[Resposta JSON]
+    M --> A
     
-    J[Swagger Docs] --> B
-    K[Drizzle Studio] --> G
-    L[Testes Vitest] --> D
+    N[Scalar API Docs] --> B
+    O[Drizzle Studio] --> K
+    P[Testes Vitest] --> D
     
     style A fill:#e1f5fe
     style B fill:#f3e5f5
-    style G fill:#e8f5e8
-    style J fill:#fff3e0
-    style K fill:#fff3e0
-    style L fill:#fce4ec
+    style K fill:#e8f5e8
+    style N fill:#fff3e0
+    style O fill:#fff3e0
+    style P fill:#fce4ec
 ```
 
 ## Tecnologias Utilizadas
 
 ### Backend
-- **Fastify** - Framework web rápido e eficiente com foco em performance
-- **TypeScript** - Linguagem de programação tipada para maior segurança
+- **Fastify 5.0** - Framework web rápido e eficiente com foco em performance
+- **TypeScript 5.9** - Linguagem de programação tipada para maior segurança
 - **PostgreSQL** - Banco de dados relacional robusto e confiável
-- **Drizzle ORM** - ORM moderno, type-safe e performático
+- **Drizzle ORM 0.44** - ORM moderno, type-safe e performático
+
+### Autenticação e Segurança
+- **JWT** - Tokens de autenticação seguros
+- **Argon2** - Hash de senhas com salt automático
+- **Zod** - Validação de schemas com TypeScript
 
 ### Ferramentas de Desenvolvimento
-- **Zod** - Validação de schemas com TypeScript
 - **Vitest** - Framework de testes rápido e moderno
 - **Docker** - Containerização para desenvolvimento consistente
-- **Swagger/OpenAPI** - Documentação automática da API
+- **Scalar API Reference** - Documentação automática da API moderna
+- **TSX** - Executor TypeScript para desenvolvimento
 
 ### Qualidade de Código
 - **ESLint** - Linting para manter padrões de código
@@ -87,17 +98,23 @@ graph TD
 ## Funcionalidades
 
 ### Core
--  Criar novos cursos com validação
--  Listar todos os cursos com paginação
--  Buscar curso por ID com tratamento de erros
--  Validação robusta de dados com Zod
--  Respostas padronizadas da AP 
+- Sistema completo de usuários com roles (student/manager)
+- Autenticação JWT com hash seguro de senhas (Argon2)
+- Controle de acesso baseado em roles
+- Criar novos cursos com validação
+- Listar todos os cursos com paginação
+- Buscar curso por ID com tratamento de erros
+- Sistema de matrículas (enrollments)
+- Validação robusta de dados com Zod
+- Respostas padronizadas da API
+
 ### Desenvolvimento
--  Documentação automática com Swagger
--  Logs estruturados para debugging
--  TypeScript com tipagem completa
--  Testes automatizados com Vitest
--  Migrações de banco com Drizzle
+- Documentação automática com Scalar API Reference
+- Logs estruturados com Pino Pretty
+- TypeScript com tipagem completa
+- Testes automatizados com Vitest
+- Migrações de banco com Drizzle
+- Seeds para dados de exemplo
 
 ## Pré-requisitos
 
@@ -133,6 +150,7 @@ Antes de começar, você precisa ter instalado:
    ```env
    NODE_ENV=development
    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/desafio
+   JWT_SECRET=sua-chave-secreta-jwt-aqui
    ```
 
 3. **Execute as migrações do banco**
@@ -169,9 +187,35 @@ Acesse `http://localhost:4983` para visualizar e gerenciar os dados.
 
 ## Endpoints da API
 
-### 1. Criar Curso
+### 1. Autenticação
+```http
+POST /sessions
+Content-Type: application/json
+
+{
+    "email": "usuario@exemplo.com",
+    "password": "senha123"
+}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+    "token": "jwt-token-aqui"
+}
+```
+
+**Resposta de Erro (400):**
+```json
+{
+    "message": "Invalid Credentials"
+}
+```
+
+### 2. Criar Curso (Requer role: manager)
 ```http
 POST /courses
+Authorization: Bearer <jwt-token>
 Content-Type: application/json
 
 {
@@ -199,7 +243,7 @@ Content-Type: application/json
 }
 ```
 
-### 2. Listar Todos os Cursos
+### 3. Listar Todos os Cursos
 ```http
 GET /courses?page=1&limit=10
 ```
@@ -226,7 +270,7 @@ GET /courses?page=1&limit=10
 }
 ```
 
-### 3. Buscar Curso por ID
+### 4. Buscar Curso por ID
 ```http
 GET /courses/{id}
 ```
@@ -258,7 +302,7 @@ GET /courses/{id}
 
 Quando o projeto estiver rodando, você pode acessar:
 
-- **Documentação Swagger**: `http://localhost:3333/docs`
+- **Documentação Scalar API**: `http://localhost:3333/docs`
 - **Referência da API**: Interface interativa para testar os endpoints
 - **Especificação OpenAPI**: `http://localhost:3333/docs/json`
 
@@ -269,15 +313,24 @@ node-primeira-api/
 ├── src/
 │   ├── database/
 │   │   ├── client.ts          # Configuração do banco de dados
-│   │   ├── schema.ts          # Schemas das tabelas
+│   │   ├── schema.ts          # Schemas das tabelas (users, courses, enrollments)
 │   │   └── seed.ts            # Dados de exemplo
 │   ├── routes/
-│   │   ├── create-course.ts   # Rota para criar cursos
+│   │   ├── create-course.ts   # Rota para criar cursos (role: manager)
 │   │   ├── get-courses.ts     # Rota para listar cursos
-│   │   └── get-course-by-id.ts # Rota para buscar curso por ID
+│   │   ├── get-course-by-id.ts # Rota para buscar curso por ID
+│   │   ├── login.ts           # Rota de autenticação (/sessions)
+│   │   └── hooks/
+│   │       ├── check-role.ts  # Hook de verificação de roles
+│   │       └── check-request-jwt.ts # Hook de verificação JWT
 │   ├── tests/
 │   │   └── factories/
-│   │       └── make-course.ts # Factory para testes
+│   │       ├── make-course.ts # Factory para testes
+│   │       ├── make-user.ts   # Factory para usuários
+│   │       ├── make-session.ts # Factory para sessões
+│   │       └── make-enrollments.ts # Factory para matrículas
+│   ├── utils/
+│   │   └── get-authenticated-user-request.ts # Utilitário para extrair usuário do JWT
 │   ├── app.ts                 # Configuração da aplicação
 │   └── server.ts              # Configuração do servidor
 ├── drizzle/                   # Migrações do banco
@@ -300,7 +353,6 @@ node-primeira-api/
 | `npm run db:seed` | Popula o banco com dados de exemplo |
 | `npm run db:studio` | Abre o Drizzle Studio para visualizar dados |
 
-
 ## Testes
 
 O projeto utiliza **Vitest** para testes automatizados, garantindo qualidade e confiabilidade do código.
@@ -309,15 +361,13 @@ O projeto utiliza **Vitest** para testes automatizados, garantindo qualidade e c
 ```bash
 # Todos os testes
 npm test
-
+```
 
 ### Estrutura de Testes
 - **Testes unitários** para funções isoladas
 - **Testes de integração** para rotas da API
 - **Factories** para criar dados de teste consistentes
 - **Cobertura de código** para identificar áreas não testadas
-
-
 
 ## Deploy
 
@@ -334,6 +384,7 @@ docker run -p 3333:3333 primeira-api
 ```env
 NODE_ENV=production
 DATABASE_URL=postgresql://user:password@host:port/database
+JWT_SECRET=chave-secreta-jwt-producao-muito-segura
 ```
 
 ## Contribuindo
